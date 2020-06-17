@@ -9,6 +9,8 @@ import (
 
 // EtcdClusterSpec defines the desired state of EtcdCluster
 type EtcdClusterSpec struct {
+	Size    *int32 `json:"size"`
+	Version string `json:"version"`
 	// INSERT ADDITIONAL SPEC FIELDS - desired state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
@@ -16,6 +18,7 @@ type EtcdClusterSpec struct {
 
 // EtcdClusterStatus defines the observed state of EtcdCluster
 type EtcdClusterStatus struct {
+	Message string `json:"message"`
 	// INSERT ADDITIONAL STATUS FIELD - define observed state of cluster
 	// Important: Run "operator-sdk generate k8s" to regenerate code after modifying this file
 	// Add custom validation using kubebuilder tags: https://book-v1.book.kubebuilder.io/beyond_basics/generating_crd.html
