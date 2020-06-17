@@ -3,5 +3,5 @@ kind: EtcdCluster
 metadata:
   name: example-etcdcluster
 spec:
-  # Add fields here
   size: 3
+  version: 3.4.9

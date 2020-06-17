@@ -2,6 +2,11 @@ package etcdcluster
 
 import (
 	"context"
+	"fmt"
+	v1 "k8s.io/api/apps/v1"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/apimachinery/pkg/types"
 
 	demov1alpha1 "github.com/akashshinde/etcd-operator/pkg/apis/demo/v1alpha1"
 	"k8s.io/apimachinery/pkg/api/errors"
@@ -105,14 +110,13 @@ func (r *ReconcileEtcdCluster) Reconcile(request reconcile.Request) (reconcile.R
 
 		err = r.client.Update(context.TODO(), d)
 		if err != nil {
-			reqLogger.Error(err, "Failed to update Deployment")
 			return reconcile.Result{}, err
 		}
 	}
 
 	status := fmt.Sprintf("Cluster created with etcd version %s", instance.Spec.Version)
-	if status != instance.Status.Status {
-		instance.Status.Status = status
+	if status != instance.Status.Message {
+		instance.Status.Message = status
 		err = r.client.Status().Update(context.TODO(), instance)
 		if err != nil {
 			reqLogger.Error(err, "Failed to update status")
@@ -123,7 +127,7 @@ func (r *ReconcileEtcdCluster) Reconcile(request reconcile.Request) (reconcile.R
 }
 
 func (r ReconcileEtcdCluster) UpdateDeployment(d *v1.Deployment, instance *demov1alpha1.EtcdCluster) *v1.Deployment {
-	d.Spec.Replicas = instance.Spec.Replica
+	d.Spec.Replicas = instance.Spec.Size
 	for i := range d.Spec.Template.Spec.Containers {
 		d.Spec.Template.Spec.Containers[i].Image = "bitnami/etcd:" + instance.Spec.Version
 	}
@@ -137,7 +141,7 @@ func (r ReconcileEtcdCluster) CreateDeployment(instance *demov1alpha1.EtcdCluste
 			Namespace: instance.Namespace,
 		},
 		Spec: v1.DeploymentSpec{
-			Replicas: instance.Spec.Replica,
+			Replicas: instance.Spec.Size,
 			Selector: &metav1.LabelSelector{
 				MatchLabels: map[string]string{"app": "database"},
 			},
